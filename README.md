@@ -219,7 +219,7 @@ D = 1.05 for det siste kartet.
 
 Men, dersom dette algoritmen skal kjøres på et stort kart og et vektet kart, da vil D = 0 gi best resultat tror jeg. Fordi da er vi tilbake til A-stjerne standard algoritmen.
 
-# Forskjellige søke-algoritmer og forksjeller mellom noen av dem.
+## Forskjellige søke-algoritmer og forksjeller mellom noen av dem.
 
 A star er den mest effektive uansett hvordan kartet ser ut. Det A-stjerne garanterer korteste mulig vei selv om den er ganske effektiv.
 Greedy best first er et effektivt søk, men kan også lede til lange veier til mål. Med dette mener jeg at veien til mål kan være 10 noder lengre enn korteste vei på det store kartet.
