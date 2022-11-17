@@ -244,24 +244,22 @@ class AStar(Graph):
     # 
     ###############################################################################
     '''
-    def AStarSearch(self, startVertexName = None, targetVertexName = None) -> list:
+    def AStarSearch(self, start_vertex_name = None, target_vertex_name = None) -> list:
         # Check to see that startvertex is in Graph
-        if startVertexName not in self.vertecies:
+        if start_vertex_name not in self.vertecies:
             raise KeyError("Start node not present in graph")
         
         from heapdict import heapdict
         self.initPygame()
         count = 0 # Amount of Nodes visited, this is just a performance checker, i've done some small fine tuning.
-        D = 1.05 # Fine tuning part... look in documentation for reasoning and source. If this A Start algorythm is to be used on another map, reset to 1.00
+        D = 1.05 # Fine tuning part... look in documentation for reasoning and source. If this A-Star algorithm is to be used on another map, reset to 1.00
 
-        # Setting all Vertex values for h, g and f so it does not need to be done later.
+        # Setting Vertex values for g and f
         for key in self.vertecies:
-            self.vertecies[key].h = self.heuristics(key, targetVertexName) * D
             self.vertecies[key].g = float('inf')
-            self.vertecies[key].f = float('inf')
 
         # Initial value for the first vertex. g = 0 because we have not moved anywhere.
-        vertex:Vertex = self.vertecies[startVertexName]
+        vertex:Vertex = self.vertecies[start_vertex_name]
         vertex.g = 0
 
         priqueue = heapdict() # Queue initialized
@@ -273,17 +271,18 @@ class AStar(Graph):
             # Get the element with lowest priority (i.e. lowest f value)
             vertex = priqueue.popitem()[0]
 
-            if vertex.name == targetVertexName: # If we've found the goal, exit while loop and finish up.
+            if vertex.name == target_vertex_name: # If we've found the goal, exit while loop and finish up.
                 break
 
             # color the current value and the start vertex and the end vertex it's appropriate colors.
             self.pygameState(vertex, self.GREEN)
-            self.pygameState(self.vertecies[startVertexName], self.BLUE)
-            self.pygameState(self.vertecies[targetVertexName], self.RED)
+            self.pygameState(self.vertecies[start_vertex_name], self.BLUE)
+            self.pygameState(self.vertecies[target_vertex_name], self.RED)
 
             # Look through and add the neighours that are worth visiting to the heapdict.
             for neighbour in vertex.adjecent:
                 if neighbour.vertex.g > vertex.g + neighbour.weight:
+                    neighbour.vertex.h = self.heuristics(neighbour.vertex.name, target_vertex_name) * D
                     neighbour.vertex.g = vertex.g + neighbour.weight
                     neighbour.vertex.f = neighbour.vertex.g + neighbour.vertex.h
                     neighbour.vertex.previous = vertex
@@ -291,20 +290,22 @@ class AStar(Graph):
                     priqueue[neighbour.vertex] = neighbour.vertex.f
                     self.pygameState(neighbour.vertex, self.PINK)
 
-            self.pygameState(vertex, self.LIGHTGREY) # Mark that the Vertex has been visited and finished working on it.
+            self.pygameState(vertex, self.LIGHTGREY) # Mark this Vertex as visited in pygame.
             
 
         print('Amount of nodes visited:', count)
+
         length = 0
-        for n in self.getPath(startVertexName, targetVertexName): # Update pygame with path found.
+        for n in self.getPath(start_vertex_name, target_vertex_name): # Update pygame with path found.
             self.pygameState(n, self.DARKGREEN)
             length += 1
+
         print(f"Path length: {length}")
-        return self.getPath(startVertexName, targetVertexName) # Not used?
+        return self.getPath(start_vertex_name, target_vertex_name) # Not used?
 
 
 
-astar = AStar(delay = 0, visual = False)
+astar = AStar(delay = 0, visual = True)
 
 # astar.readFile('minigraf.txt')
 # startVertexName, targetVertexName, removed = astar.readLimitations('minigraf_xtras.txt')
